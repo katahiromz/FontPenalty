@@ -208,6 +208,7 @@ int DoFont(HFONT hFont)
         otm.otmSize = sizeof(otm);
         if (!GetOutlineTextMetricsW(g_hDC, sizeof(buf), &otm))
         {
+            printf("RET_CANTGETMETRICS\n");
             return RET_CANTGETMETRICS;
         }
 
@@ -234,6 +235,7 @@ int DoFont(HFONT hFont)
         return 0;
     }
 
+    printf("RET_CANTSELECTFONT\n");
     return RET_CANTSELECTFONT;
 }
 
@@ -267,6 +269,8 @@ int JustDoIt(int argc, char **argv)
         DeleteObject(hFont);
         return 0;
     }
+
+    printf("RET_CANTCREATEFONT\n");
     return RET_CANTCREATEFONT;
 }
 
