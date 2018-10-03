@@ -1,9 +1,9 @@
 // FontPenalty.cpp
 // Copyright (C) 2018 Katayama Hirofumi MZ <katayama.hirofumi.mz@gmail.com>
 // This file is public domain software.
-#include <ft2build.h>
-#include FT_FREETYPE_H
-#include FT_TRUETYPE_TABLES_H
+//#include <ft2build.h>
+//#include FT_FREETYPE_H
+//#include FT_TRUETYPE_TABLES_H
 
 #include <windows.h>
 #include <cstdio>
@@ -24,7 +24,7 @@ enum RET
 };
 
 HDC g_hDC;
-FT_Library g_library;
+//FT_Library g_library;
 const char *g_name = NULL;
 const char *g_file = NULL;
 const char *g_style = NULL;
@@ -223,6 +223,10 @@ int DoFont(HFONT hFont)
         if (g_name)
             MultiByteToWideChar(CP_ACP, 0, g_name, -1, lf.lfFaceName, LF_FACESIZE);
 
+        CHAR szFace[LF_FACESIZE];
+        GetTextFaceA(g_hDC, LF_FACESIZE, szFace);
+        printf("actual font: %s\n", szFace);
+
         UINT nPenalty = GetFontPenalty(&lf, &otm, g_style);
         printf("Penalty: %u\n", nPenalty);
 
@@ -269,13 +273,13 @@ int JustDoIt(int argc, char **argv)
 int main(int argc, char **argv)
 {
     int ret = 0;
-    FT_Init_FreeType(&g_library);
+    //FT_Init_FreeType(&g_library);
     if (g_hDC = CreateCompatibleDC(NULL))
     {
         ret = JustDoIt(argc, argv);
         DeleteDC(g_hDC);
         g_hDC = NULL;
     }
-    FT_Done_FreeType(g_library);
+    //FT_Done_FreeType(g_library);
     return ret;
 }

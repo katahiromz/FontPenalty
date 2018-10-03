@@ -13,17 +13,46 @@ enable_testing()
 project(FontPenalty CXX)
 
 # use FreeType
-find_package(FreeType REQUIRED)
+#find_package(FreeType REQUIRED)
 
 # set output directory (build/)
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+#set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
+#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+#set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+
+# statically link
+if (WIN32)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        # using Clang
+        set(CMAKE_C_FLAGS "-static")
+        set(CMAKE_CXX_FLAGS "-static")
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        # using GCC
+        set(CMAKE_C_FLAGS "-static -static-libgcc -static-libstdc++")
+        set(CMAKE_CXX_FLAGS "-static -static-libgcc -static-libstdc++")
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        # replace "/MD" with "/MT" (building without runtime DLLs)
+        set(CompilerFlags
+            CMAKE_C_FLAGS
+            CMAKE_C_FLAGS_DEBUG
+            CMAKE_C_FLAGS_RELEASE
+            CMAKE_C_FLAGS_RELWITHDEBINFO
+            CMAKE_CXX_FLAGS
+            CMAKE_CXX_FLAGS_DEBUG
+            CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+        foreach(CompilerFlags ${CompilerFlags})
+            string(REPLACE "/MD" "/MT" ${CompilerFlags} "${${CompilerFlags}}")
+        endforeach()
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Watcom")
+        add_definitios(-bw)
+    endif()
+endif()
 
 ##############################################################################
 
 add_executable(FontPenalty FontPenalty.cpp)
-target_include_directories(FontPenalty PRIVATE ${FREETYPE_INCLUDE_DIRS})
-target_link_libraries(FontPenalty ${FREETYPE_LIBRARIES})
+#target_include_directories(FontPenalty PRIVATE ${FREETYPE_INCLUDE_DIRS})
+#target_link_libraries(FontPenalty ${FREETYPE_LIBRARIES})
 
 ##############################################################################
