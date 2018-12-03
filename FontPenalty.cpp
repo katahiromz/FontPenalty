@@ -146,12 +146,12 @@ void ShowMetrics(LPOUTLINETEXTMETRICW potm)
     DO_OUT(potm->otmTextMetrics.tmLastChar);
     DO_OUT(potm->otmTextMetrics.tmDefaultChar);
     DO_OUT(potm->otmTextMetrics.tmBreakChar);
-    DO_OUT(potm->otmTextMetrics.tmItalic);
-    DO_OUT(potm->otmTextMetrics.tmUnderlined);
-    DO_OUT(potm->otmTextMetrics.tmStruckOut);
-    DO_OUT(potm->otmTextMetrics.tmPitchAndFamily);
-    DO_OUT(potm->otmTextMetrics.tmCharSet);
-    DO_OUT(potm->otmFiller);
+    DO_OUT((int)potm->otmTextMetrics.tmItalic);
+    DO_OUT((int)potm->otmTextMetrics.tmUnderlined);
+    DO_OUT((int)potm->otmTextMetrics.tmStruckOut);
+    DO_OUT((int)potm->otmTextMetrics.tmPitchAndFamily);
+    DO_OUT((int)potm->otmTextMetrics.tmCharSet);
+    DO_OUT((int)potm->otmFiller);
     DO_OUT((int)potm->otmPanoseNumber.bFamilyType);
     DO_OUT((int)potm->otmPanoseNumber.bSerifStyle);
     DO_OUT((int)potm->otmPanoseNumber.bWeight);
