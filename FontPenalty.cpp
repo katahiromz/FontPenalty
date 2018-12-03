@@ -31,10 +31,11 @@ const char *g_style = NULL;
 BYTE g_charset = DEFAULT_CHARSET;
 LONG g_lfHeight = 0;
 BOOL g_show_metrics = FALSE;
+LANGID g_langid = GetUserDefaultLangID();
 
 void ShowVersion(void)
 {
-    printf("FontPenalty 0.0 %s by katahiromz\n", __DATE__);
+    printf("FontPenalty 0.1 %s by katahiromz\n", __DATE__);
 }
 
 void ShowHelp(void)
@@ -44,16 +45,26 @@ void ShowHelp(void)
     printf("Options:\n");
     printf("--help                      Show this help\n");
     printf("--version                   Show version info\n");
-    printf("--name \"font name\"          Set the target font name\n");
-    printf("--file \"font_file.ttf\"      Set the target font file\n");
-    printf("--height HHH                Set request lfHeight value\n");
-    printf("--charset ddd               Set request charset value\n");
+    printf("--name \"font name\"          Set the target font name (default: \"\")\n");
+    printf("--height HHH                Set request lfHeight value (default: 0)\n");
+    printf("--charset ddd               Set request charset value (default: 0)\n");
     printf("--style \"Bold\"              Set actual style string\n");
+    printf("--langid 0xXXXX             Set language ID (default: 0x%04X)\n", g_langid);
+    printf("--file \"font_file.ttf\"      Set the target font file\n");
     printf("--metrics                   Show the metrics\n");
 }
 
 int ParseCommandLine(int argc, char **argv)
 {
+    for (int i = 1; i < argc; ++i)
+    {
+        if (strchr(argv[i], ' ') != NULL)
+            printf("argv[%i] = \"%s\"\n", i, argv[i]);
+        else
+            printf("argv[%i] = %s\n", i, argv[i]);
+    }
+    printf("\n");
+
     for (int i = 1; i < argc; ++i)
     {
         if (strcmp(argv[i], "--help") == 0)
@@ -101,6 +112,12 @@ int ParseCommandLine(int argc, char **argv)
             ++i;
             continue;
         }
+        if (strcmp(argv[i], "--langid") == 0)
+        {
+            g_langid = strtol(argv[i + 1], NULL, 0);
+            ++i;
+            continue;
+        }
         if (argv[i][0] == '-')
         {
             printf("ERROR: invalid option: %s\n", argv[i]);
@@ -135,16 +152,16 @@ void ShowMetrics(LPOUTLINETEXTMETRICW potm)
     DO_OUT(potm->otmTextMetrics.tmPitchAndFamily);
     DO_OUT(potm->otmTextMetrics.tmCharSet);
     DO_OUT(potm->otmFiller);
-    DO_OUT(potm->otmPanoseNumber.bFamilyType);
-    DO_OUT(potm->otmPanoseNumber.bSerifStyle);
-    DO_OUT(potm->otmPanoseNumber.bWeight);
-    DO_OUT(potm->otmPanoseNumber.bProportion);
-    DO_OUT(potm->otmPanoseNumber.bContrast);
-    DO_OUT(potm->otmPanoseNumber.bStrokeVariation);
-    DO_OUT(potm->otmPanoseNumber.bArmStyle);
-    DO_OUT(potm->otmPanoseNumber.bLetterform);
-    DO_OUT(potm->otmPanoseNumber.bMidline);
-    DO_OUT(potm->otmPanoseNumber.bXHeight);
+    DO_OUT((int)potm->otmPanoseNumber.bFamilyType);
+    DO_OUT((int)potm->otmPanoseNumber.bSerifStyle);
+    DO_OUT((int)potm->otmPanoseNumber.bWeight);
+    DO_OUT((int)potm->otmPanoseNumber.bProportion);
+    DO_OUT((int)potm->otmPanoseNumber.bContrast);
+    DO_OUT((int)potm->otmPanoseNumber.bStrokeVariation);
+    DO_OUT((int)potm->otmPanoseNumber.bArmStyle);
+    DO_OUT((int)potm->otmPanoseNumber.bLetterform);
+    DO_OUT((int)potm->otmPanoseNumber.bMidline);
+    DO_OUT((int)potm->otmPanoseNumber.bXHeight);
     DO_OUT(potm->otmfsSelection);
     DO_OUT(potm->otmfsType);
     DO_OUT(potm->otmsCharSlopeRise);
@@ -178,7 +195,7 @@ void ShowMetrics(LPOUTLINETEXTMETRICW potm)
     DO_OUT(potm->otmsUnderscorePosition);
 }
 
-#define gusLanguageID MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US)
+#define gusLanguageID g_langid
 #define ASSERT assert
 #define DPRINT printf
 
@@ -226,7 +243,8 @@ int DoFont(HFONT hFont)
 
         CHAR szFace[LF_FACESIZE];
         GetTextFaceA(g_hDC, LF_FACESIZE, szFace);
-        printf("actual font: %s\n", szFace);
+        printf("requested font: \"%s\"\n", g_name ? g_name : "");
+        printf("actual font: \"%s\"\n", szFace);
 
         UINT nPenalty = GetFontPenalty(&lf, &otm, g_style);
         printf("Penalty: %u\n", nPenalty);
