@@ -45,22 +45,24 @@ GetFontPenalty(const LOGFONTW *               LogFont,
         {
             if (UserCharSet != TM->tmCharSet)
             {
-                /* UNDOCUMENTED */
-                GOT_PENALTY("UNDOCUMENTED", 100);
+                /* UNDOCUMENTED: Not user language */
+                GOT_PENALTY("UNDOCUMENTED:NotUserLanguage", 100);
+
                 if (ANSI_CHARSET != TM->tmCharSet)
                 {
-                    /* UNDOCUMENTED */
-                    GOT_PENALTY("UNDOCUMENTED", 100);
+                    /* UNDOCUMENTED: Not ANSI charset */
+                    GOT_PENALTY("UNDOCUMENTED:NotAnsiCharSet", 100);
                 }
             }
         }
     }
 
     Byte = LogFont->lfOutPrecision;
-    if (Byte == OUT_DEFAULT_PRECIS)
-        Byte = OUT_OUTLINE_PRECIS;  /* Is it OK? */
     switch (Byte)
     {
+        case OUT_DEFAULT_PRECIS:
+            /* nothing to do */
+            break;
         case OUT_DEVICE_PRECIS:
             if (!(TM->tmPitchAndFamily & TMPF_DEVICE) ||
                 !(TM->tmPitchAndFamily & (TMPF_VECTOR | TMPF_TRUETYPE)))

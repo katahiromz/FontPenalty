@@ -1,9 +1,6 @@
 // FontPenalty.cpp
 // Copyright (C) 2018 Katayama Hirofumi MZ <katayama.hirofumi.mz@gmail.com>
 // This file is public domain software.
-//#include <ft2build.h>
-//#include FT_FREETYPE_H
-//#include FT_TRUETYPE_TABLES_H
 
 #include <windows.h>
 #include <cstdio>
@@ -24,7 +21,6 @@ enum RET
 };
 
 HDC g_hDC;
-//FT_Library g_library;
 const char *g_name = NULL;
 const char *g_file = NULL;
 const char *g_style = NULL;
@@ -35,7 +31,7 @@ LANGID g_langid = GetUserDefaultLangID();
 
 void ShowVersion(void)
 {
-    printf("FontPenalty 0.1 %s by katahiromz\n", __DATE__);
+    printf("FontPenalty 0.2 %s by katahiromz\n", __DATE__);
 }
 
 void ShowHelp(void)
@@ -56,12 +52,13 @@ void ShowHelp(void)
 
 int ParseCommandLine(int argc, char **argv)
 {
+    printf("Command Line: FontPenalty ");
     for (int i = 1; i < argc; ++i)
     {
         if (strchr(argv[i], ' ') != NULL)
-            printf("argv[%i] = \"%s\"\n", i, argv[i]);
+            printf("\"%s\" ", argv[i]);
         else
-            printf("argv[%i] = %s\n", i, argv[i]);
+            printf("%s ", argv[i]);
     }
     printf("\n");
 
@@ -215,6 +212,8 @@ void ShowMetrics(LPOUTLINETEXTMETRICW potm)
 
 int DoFont(HFONT hFont)
 {
+    ShowVersion();
+
     if (HGDIOBJ hFontOld = SelectObject(g_hDC, hFont))
     {
         union
@@ -295,13 +294,11 @@ int JustDoIt(int argc, char **argv)
 int main(int argc, char **argv)
 {
     int ret = 0;
-    //FT_Init_FreeType(&g_library);
     if (g_hDC = CreateCompatibleDC(NULL))
     {
         ret = JustDoIt(argc, argv);
         DeleteDC(g_hDC);
         g_hDC = NULL;
     }
-    //FT_Done_FreeType(g_library);
     return ret;
 }
