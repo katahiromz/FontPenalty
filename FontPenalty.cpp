@@ -31,7 +31,7 @@ LANGID g_langid = GetUserDefaultLangID();
 
 void ShowVersion(void)
 {
-    printf("FontPenalty 0.2 %s by katahiromz\n", __DATE__);
+    printf("FontPenalty 0.3 %s by katahiromz\n", __DATE__);
 }
 
 void ShowHelp(void)
@@ -55,7 +55,7 @@ int ParseCommandLine(int argc, char **argv)
     printf("Command Line: FontPenalty ");
     for (int i = 1; i < argc; ++i)
     {
-        if (strchr(argv[i], ' ') != NULL)
+        if (strchr(argv[i], ' ') != NULL || argv[i][0] == 0)
             printf("\"%s\" ", argv[i]);
         else
             printf("%s ", argv[i]);
